@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Manrope } from 'next/font/google';
 import './globals.css';
-import { FbPixel } from '@/components/FbPixel';
+import { Tracking } from '@/components/Tracking';
 
 const sans = Inter({ subsets: ['latin', 'cyrillic'], variable: '--font-sans', display: 'swap' });
 const display = Manrope({
@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="uk" className={`${sans.variable} ${display.variable}`}>
       <body className="min-h-screen flex flex-col">
-        <FbPixel />
+        <Tracking />
         {children}
       </body>
     </html>
