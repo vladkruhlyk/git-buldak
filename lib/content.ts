@@ -66,19 +66,17 @@ export const PRICE_TIERS = [
 
 // Фото нашого складу. Це не рендери й не каталог постачальника —
 // найсильніший доказ, що товар справді є в наявності.
-export const STOCK = [
-  {
-    src: '/warehouse-pallet.webp',
-    alt: 'Палета ящиків Buldak Carbonara на складі',
-    caption: 'Палета Carbonara',
-    tilt: '-rotate-2',
-  },
-  {
-    src: '/warehouse-box.webp',
-    alt: 'Відкритий ящик Buldak Cheese зблизька',
-    caption: 'Ящик Cheese зблизька',
-    tilt: 'rotate-2',
-  },
+export const STOCK_PHOTOS = {
+  pallet: { src: '/warehouse-pallet.webp', alt: 'Палета ящиків Buldak Carbonara на складі' },
+  box:    { src: '/warehouse-box.webp',    alt: 'Відкритий ящик Buldak Cheese зблизька' },
+};
+
+// Короткі виноски збоку від фото.
+export const STOCK_POINTS = [
+  { emoji: '📍', title: 'Свій склад у Києві', text: 'Не транзитний хаб і не чужі залишки під замовлення.' },
+  { emoji: '📦', title: 'Товар уже тут',      text: 'Беремо з полиці й відвантажуємо, а не чекаємо наступної поставки.' },
+  { emoji: '🇰🇷', title: 'Прямий імпорт',      text: 'Без перекупів і сірих схем — документи на партію надаємо.' },
+  { emoji: '⚡️', title: 'Відвантаження в день оплати', text: 'Нова Пошта — і за 1–2 дні партія у вас.' },
 ];
 
 export const WHY = [

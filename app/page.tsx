@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { CONFIG } from '@/lib/config';
 import {
-  FAQ, FLAVORS, PRICE_APPLIES_TO, PRICE_TIERS, PROOF, STOCK,
+  FAQ, FLAVORS, PRICE_APPLIES_TO, PRICE_TIERS, PROOF, STOCK_PHOTOS, STOCK_POINTS,
   TELEGRAM_CHANNEL, TERMS, WHY, type Flavor,
 } from '@/lib/content';
 import { TelegramIcon } from '@/components/TelegramIcon';
@@ -311,41 +311,73 @@ function FlavorCard({ f }: { f: Flavor }) {
   );
 }
 
-/** Фото складу — доказ, що товар фізично є. */
+/** Фото складу — доказ, що товар фізично є. Текст ліворуч, колаж праворуч. */
 function Stock() {
   return (
-    <Block
-      tone="yellow"
-      emoji="📷"
-      title="Так це виглядає на складі"
-      subtitle="Не рендери й не фото з каталогу постачальника — наш склад у Києві. Звідси товар і їде до вас."
-    >
-      <div className="grid sm:grid-cols-2 gap-5 md:gap-7 max-w-4xl">
-        {STOCK.map((p, i) => (
-          <Reveal key={p.src} delay={i * 110} from={i ? 'right' : 'left'}>
-            <figure
-              className={cn(
-                'rounded-[26px] border-[3px] border-bul-ink bg-white p-3 shadow-pop-lg transition-transform duration-300 hover:rotate-0 hover:-translate-y-1',
-                p.tilt
-              )}
-            >
-              <div className="relative aspect-[4/5] overflow-hidden rounded-[16px] border-2 border-bul-ink/10">
-                <Image
-                  src={p.src}
-                  alt={p.alt}
-                  fill
-                  sizes="(max-width: 640px) 90vw, 420px"
-                  className="object-cover"
-                />
-              </div>
-              <figcaption className="pt-3 pb-1 text-center text-[14px] font-extrabold text-bul-ink">
-                {p.caption}
-              </figcaption>
-            </figure>
+    <section className="relative overflow-hidden py-14 md:py-20 bg-bul-yellow text-bul-ink border-b-[3px] border-bul-ink">
+      <div className="container-narrow">
+        <div className="grid lg:grid-cols-[1fr_1.05fr] gap-10 lg:gap-16 items-center">
+          <Reveal from="left">
+            <h2 className="h-display text-3xl md:text-[46px] font-extrabold tracking-tight text-balance">
+              <span className="mr-2" aria-hidden>📷</span>
+              Так це виглядає на складі
+            </h2>
+
+            <p className="mt-5 text-base md:text-lg font-semibold text-bul-ink/70 text-pretty">
+              Не рендери й не фото з каталогу постачальника. Це наш склад у Києві —
+              саме звідси їде ваше замовлення.
+            </p>
+            <p className="mt-3 text-base md:text-lg font-semibold text-bul-ink/70 text-pretty">
+              Коли постачальник показує лише картинки з інтернету, ви не знаєте,
+              чи товар взагалі є. Тут видно палети й відкриті ящики — це те,
+              що можна перевірити.
+            </p>
+
+            <ul className="mt-8 grid sm:grid-cols-2 gap-3">
+              {STOCK_POINTS.map((p) => (
+                <li
+                  key={p.title}
+                  className="rounded-[20px] bg-white border-[3px] border-bul-ink p-4 transition-transform duration-300 hover:-translate-y-1"
+                >
+                  <div className="text-2xl leading-none" aria-hidden>{p.emoji}</div>
+                  <div className="mt-2 h-display text-[16px] font-extrabold leading-tight">{p.title}</div>
+                  <p className="mt-1 text-[13.5px] font-medium text-bul-ink/60 text-pretty">{p.text}</p>
+                </li>
+              ))}
+            </ul>
           </Reveal>
-        ))}
+
+          {/* Колаж: палета більша, відкритий ящик накладається знизу зліва */}
+          <Reveal from="right" delay={120}>
+            <div className="relative pb-[26%]">
+              <figure className="w-[80%] ml-auto rounded-[26px] border-[3px] border-bul-ink bg-white p-2.5 shadow-pop-lg -rotate-2 transition-transform duration-300 hover:rotate-0">
+                <div className="relative aspect-[3/4] overflow-hidden rounded-[16px]">
+                  <Image
+                    src={STOCK_PHOTOS.pallet.src}
+                    alt={STOCK_PHOTOS.pallet.alt}
+                    fill
+                    sizes="(max-width: 1024px) 70vw, 420px"
+                    className="object-cover"
+                  />
+                </div>
+              </figure>
+
+              <figure className="absolute left-0 bottom-0 w-[52%] rounded-[22px] border-[3px] border-bul-ink bg-white p-2 shadow-pop-lg rotate-3 transition-transform duration-300 hover:rotate-0">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-[14px]">
+                  <Image
+                    src={STOCK_PHOTOS.box.src}
+                    alt={STOCK_PHOTOS.box.alt}
+                    fill
+                    sizes="(max-width: 1024px) 45vw, 270px"
+                    className="object-cover"
+                  />
+                </div>
+              </figure>
+            </div>
+          </Reveal>
+        </div>
       </div>
-    </Block>
+    </section>
   );
 }
 
