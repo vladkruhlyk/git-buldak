@@ -64,6 +64,23 @@ export const PRICE_TIERS = [
   { qty: 'від 44 ящиків', note: 'палета',         price: 72 },
 ];
 
+// Фото нашого складу. Це не рендери й не каталог постачальника —
+// найсильніший доказ, що товар справді є в наявності.
+export const STOCK = [
+  {
+    src: '/warehouse-pallet.webp',
+    alt: 'Палета ящиків Buldak Carbonara на складі',
+    caption: 'Палета Carbonara',
+    tilt: '-rotate-2',
+  },
+  {
+    src: '/warehouse-box.webp',
+    alt: 'Відкритий ящик Buldak Cheese зблизька',
+    caption: 'Ящик Cheese зблизька',
+    tilt: 'rotate-2',
+  },
+];
+
 export const WHY = [
   {
     emoji: '📱',

@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { CONFIG } from '@/lib/config';
 import {
-  FAQ, FLAVORS, PRICE_APPLIES_TO, PRICE_TIERS, PROOF,
+  FAQ, FLAVORS, PRICE_APPLIES_TO, PRICE_TIERS, PROOF, STOCK,
   TELEGRAM_CHANNEL, TERMS, WHY, type Flavor,
 } from '@/lib/content';
 import { TelegramIcon } from '@/components/TelegramIcon';
@@ -26,6 +26,7 @@ export default function HomePage() {
       <Hero />
       <Why />
       <Flavors />
+      <Stock />
       <Prices />
       <TelegramBlock />
       <Terms />
@@ -307,6 +308,44 @@ function FlavorCard({ f }: { f: Flavor }) {
       <h3 className="mt-2.5 h-display text-[17px] md:text-xl font-extrabold leading-tight">{f.name}</h3>
       <p className="mt-1 text-[12.5px] md:text-[13px] font-medium text-bul-ink/55 text-pretty">{f.note}</p>
     </article>
+  );
+}
+
+/** Фото складу — доказ, що товар фізично є. */
+function Stock() {
+  return (
+    <Block
+      tone="yellow"
+      emoji="📷"
+      title="Так це виглядає на складі"
+      subtitle="Не рендери й не фото з каталогу постачальника — наш склад у Києві. Звідси товар і їде до вас."
+    >
+      <div className="grid sm:grid-cols-2 gap-5 md:gap-7 max-w-4xl">
+        {STOCK.map((p, i) => (
+          <Reveal key={p.src} delay={i * 110} from={i ? 'right' : 'left'}>
+            <figure
+              className={cn(
+                'rounded-[26px] border-[3px] border-bul-ink bg-white p-3 shadow-pop-lg transition-transform duration-300 hover:rotate-0 hover:-translate-y-1',
+                p.tilt
+              )}
+            >
+              <div className="relative aspect-[4/5] overflow-hidden rounded-[16px] border-2 border-bul-ink/10">
+                <Image
+                  src={p.src}
+                  alt={p.alt}
+                  fill
+                  sizes="(max-width: 640px) 90vw, 420px"
+                  className="object-cover"
+                />
+              </div>
+              <figcaption className="pt-3 pb-1 text-center text-[14px] font-extrabold text-bul-ink">
+                {p.caption}
+              </figcaption>
+            </figure>
+          </Reveal>
+        ))}
+      </div>
+    </Block>
   );
 }
 
