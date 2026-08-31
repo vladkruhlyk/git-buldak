@@ -23,14 +23,6 @@ export type Flavor = {
 
 export const FLAVORS: Flavor[] = [
   {
-    name: 'Original',
-    emoji: '🔥',
-    note: 'той самий гострий смак курки',
-    pack: '140 г',
-    tag: 'ХІТ',
-    image: '/original.webp',
-  },
-  {
     name: 'Carbonara',
     emoji: '🥛',
     note: 'вершковий — найлегший вхід для новачка',
@@ -45,19 +37,9 @@ export const FLAVORS: Flavor[] = [
     pack: '140 г',
     image: '/cheese.webp',
   },
-  {
-    name: '2× Spicy',
-    emoji: '💀',
-    note: 'подвійна гострота — для челенджів',
-    pack: '140 г',
-    tag: 'ВІРУС',
-    image: '/spicy2x.webp',
-  },
 ];
 
 // Оптові сходинки. Ціни станом на зараз — правити тут.
-export const PRICE_APPLIES_TO = 'Carbonara та Cheese';
-
 export const PRICE_TIERS = [
   { qty: 'від 5 ящиків',  note: 'старт',          price: 82 },
   { qty: 'від 10 ящиків', note: 'робочий обʼєм',  price: 77 },

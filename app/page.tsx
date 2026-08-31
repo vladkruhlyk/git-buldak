@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { CONFIG } from '@/lib/config';
 import {
-  FAQ, FLAVORS, PRICE_APPLIES_TO, PRICE_TIERS, PROOF, STOCK_PHOTOS, STOCK_POINTS,
+  FAQ, FLAVORS, PRICE_TIERS, PROOF, STOCK_PHOTOS, STOCK_POINTS,
   TELEGRAM_CHANNEL, TERMS, WHY, type Flavor,
 } from '@/lib/content';
 import { TelegramIcon } from '@/components/TelegramIcon';
@@ -24,10 +24,10 @@ export default function HomePage() {
     <div className="bg-bul-cream text-bul-ink overflow-x-clip">
       <TopBar />
       <Hero />
+      <Prices />
       <Why />
       <Flavors />
       <Stock />
-      <Prices />
       <TelegramBlock />
       <Terms />
       <Proof />
@@ -202,14 +202,14 @@ function Hero() {
   );
 }
 
-/** Жовта «клякса»: перетікає прямо в жовту секцію нижче. */
+/** «Клякса» на стику: колір збігається з секцією, що йде одразу за героєм. */
 function Blob() {
   return (
     <svg
       aria-hidden
       viewBox="0 0 1440 120"
       preserveAspectRatio="none"
-      className="absolute -bottom-px left-0 w-full h-[70px] md:h-[110px] text-bul-yellow"
+      className="absolute -bottom-px left-0 w-full h-[70px] md:h-[110px] text-bul-cream"
     >
       <path
         fill="currentColor"
@@ -252,7 +252,7 @@ function Flavors() {
       title="Асортимент"
       subtitle="Що є на складі зараз. Актуальні залишки й нові завози — у Telegram."
     >
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 md:gap-5">
+      <div className="grid grid-cols-2 gap-3.5 md:gap-5 max-w-2xl">
         {FLAVORS.map((f, i) => (
           <Reveal key={f.name} delay={(i % 4) * 80} from="zoom" className="h-full">
             <FlavorCard f={f} />
@@ -390,7 +390,7 @@ function Prices() {
       tone="cream"
       emoji="💸"
       title="Чим більший обʼєм — тим нижча ціна"
-      subtitle={`Ціни за пачку на ${PRICE_APPLIES_TO}. Решта смаків — прайс за запитом.`}
+      subtitle="Ціна за пачку падає зі зростанням партії. Нижче — три сходинки."
     >
       <div className="grid sm:grid-cols-3 gap-4 md:gap-5">
         {PRICE_TIERS.map((t, i) => {
@@ -641,8 +641,7 @@ function MobileBar() {
 
 const TONES = {
   cream: { section: 'bg-bul-cream text-bul-ink', sub: 'text-bul-ink/60' },
-  // без верхнього бордера — зверху в неї втікає жовта хвиля з героя
-  yellow: { section: 'bg-bul-yellow text-bul-ink border-b-[3px] border-bul-ink', sub: 'text-bul-ink/65' },
+  yellow: { section: 'bg-bul-yellow text-bul-ink border-y-[3px] border-bul-ink', sub: 'text-bul-ink/65' },
   red: { section: 'bg-bul-red text-white border-y-[3px] border-bul-ink', sub: 'text-white/80' },
   ink: { section: 'bg-bul-ink text-white', sub: 'text-white/60' },
 } as const;
