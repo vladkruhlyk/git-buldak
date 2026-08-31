@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { CONFIG } from '@/lib/config';
 import {
-  FAQ, FLAVORS, PRICE_TIERS, PROOF, STOCK_PHOTOS, STOCK_POINTS,
+  FAQ, FLAVORS, PRICE_APPLIES_TO, PRICE_TIERS, PROOF, STOCK_PHOTOS, STOCK_POINTS,
   TELEGRAM_CHANNEL, TERMS, WHY, type Flavor,
 } from '@/lib/content';
 import { TelegramIcon } from '@/components/TelegramIcon';
@@ -282,7 +282,7 @@ function Flavors({ v }: { v: Variant }) {
       title="Асортимент"
       subtitle="Що є на складі зараз. Актуальні залишки й нові завози — у Telegram."
     >
-      <div className="grid grid-cols-2 gap-3.5 md:gap-5 max-w-2xl">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 md:gap-5">
         {FLAVORS.map((f, i) => (
           <Reveal key={f.name} delay={(i % 4) * 80} from="zoom" className="h-full">
             <FlavorCard f={f} />
@@ -420,7 +420,7 @@ function Prices({ v }: { v: Variant }) {
       tone="cream"
       emoji="💸"
       title="Чим більший обʼєм — тим нижча ціна"
-      subtitle="Ціна за пачку падає зі зростанням партії. Нижче — три сходинки."
+      subtitle={`Ціни за пачку на ${PRICE_APPLIES_TO}. Решта смаків — прайс за запитом.`}
     >
       <div className="grid sm:grid-cols-3 gap-4 md:gap-5">
         {PRICE_TIERS.map((t, i) => {

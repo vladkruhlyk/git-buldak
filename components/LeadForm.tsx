@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/format';
+import { normalizeUaPhone } from '@/lib/phone';
 
 const ENDPOINT = '/api/lead';
 
@@ -19,7 +20,9 @@ export function LeadForm() {
     setError(null);
 
     if (!name.trim()) return setError('Вкажіть імʼя');
-    if (phone.replace(/\D/g, '').length < 10) return setError('Вкажіть коректний телефон');
+
+    const normalizedPhone = normalizeUaPhone(phone);
+    if (!normalizedPhone) return setError('Схоже, у номері помилка. Приклад: +380 63 111 22 33');
 
     setSubmitting(true);
     try {
@@ -28,7 +31,7 @@ export function LeadForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: name.trim(),
-          phone: phone.trim(),
+          phone: normalizedPhone,
           request: request.trim(),
           company,
           page_url: typeof window !== 'undefined' ? window.location.href : '',

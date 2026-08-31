@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { normalizeUaPhone } from '@/lib/phone';
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 // Один або кілька отримувачів через кому: "-1001234567890,123456789"
@@ -93,11 +94,13 @@ export async function POST(req: Request) {
   if (!lead.name?.trim()) {
     return NextResponse.json({ error: 'name_required' }, { status: 400 });
   }
-  if ((lead.phone ?? '').replace(/\D/g, '').length < 10) {
+  // Перевіряємо ще раз на сервері: у клієнт можна не вірити.
+  const phone = normalizeUaPhone(lead.phone ?? '');
+  if (!phone) {
     return NextResponse.json({ error: 'phone_invalid' }, { status: 400 });
   }
 
-  const text = buildMessage(lead);
+  const text = buildMessage({ ...lead, phone });
 
   const results = await Promise.allSettled(
     CHAT_IDS.map((chat_id) =>
