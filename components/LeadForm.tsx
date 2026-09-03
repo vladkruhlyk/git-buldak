@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { cn } from '@/lib/format';
 import { normalizeUaPhone } from '@/lib/phone';
+import { CONFIG } from '@/lib/config';
 
 const ENDPOINT = '/api/lead';
 
@@ -41,6 +42,16 @@ export function LeadForm() {
 
       // Конверсія цієї версії сторінки — саме відправлена форма, а не клік.
       window.fbq?.('track', 'Lead', { content_name: 'buldak', source: 'form' });
+      // Purchase шлемо навмисно: алгоритм Meta оптимізується під нього
+      // агресивніше. Пам'ятайте, що це заявка, а не оплата, — звітам про
+      // «виручку» в кабінеті вірити не можна.
+      window.fbq?.('track', 'Purchase', {
+        content_name: 'buldak',
+        source: 'form',
+        ...(CONFIG.leadValueUah > 0
+          ? { value: CONFIG.leadValueUah, currency: 'UAH' }
+          : {}),
+      });
       setSubmitted(true);
     } catch (err) {
       console.error('Lead submit failed', err);
