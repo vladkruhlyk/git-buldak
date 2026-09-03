@@ -2,6 +2,7 @@
 
 import Script from 'next/script';
 import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { Analytics } from '@vercel/analytics/next';
 import { track } from '@vercel/analytics';
 import { CONFIG } from '@/lib/config';
@@ -23,7 +24,15 @@ declare global {
  * Обидва рахують у браузері, тож блокувальники частину кліків зʼїдять.
  */
 export function Tracking() {
+  const pathname = usePathname();
+
   useEffect(() => {
+    // Клік вважаємо конверсією тільки на версії, де немає форми.
+    // На /form конверсія — надіслана заявка, і рахує її сама форма.
+    // Без цієї перевірки будь-яке посилання на Telegram, дописане туди
+    // згодом, почало б тихо накручувати Lead.
+    if (pathname !== '/') return;
+
     const onClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
       // closest — бо клікають і по іконці всередині кнопки, не лише по тексту
@@ -42,7 +51,7 @@ export function Tracking() {
 
     document.addEventListener('click', onClick, { capture: true });
     return () => document.removeEventListener('click', onClick, { capture: true });
-  }, []);
+  }, [pathname]);
 
   return (
     <>
