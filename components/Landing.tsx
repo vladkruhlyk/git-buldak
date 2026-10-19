@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { CONFIG } from '@/lib/config';
 import {
-  FAQ, FLAVORS, PRICE_APPLIES_TO, PRICE_TIERS, PROOF, STOCK_PHOTOS, STOCK_POINTS,
+  BOX_PACKS, FAQ, FLAVORS, PRICE_TIERS, PRICE_UPDATED, PROOF, STOCK_PHOTOS, STOCK_POINTS,
   TELEGRAM_CHANNEL, TERMS, WHY, type Flavor,
 } from '@/lib/content';
 import { TelegramIcon } from '@/components/TelegramIcon';
@@ -282,7 +282,7 @@ function Flavors({ v }: { v: Variant }) {
       title="Асортимент"
       subtitle="Що є на складі зараз. Актуальні залишки й нові завози — у Telegram."
     >
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 md:gap-5">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5 md:gap-4">
         {FLAVORS.map((f, i) => (
           <Reveal key={f.name} delay={(i % 4) * 80} from="zoom" className="h-full">
             <FlavorCard f={f} />
@@ -413,59 +413,65 @@ function Stock() {
 
 /** Сходинки опту: чим більший обʼєм, тим нижча ціна за пачку. */
 function Prices({ v }: { v: Variant }) {
-  const base = PRICE_TIERS[0].price;
+  // Ціни тепер різні по смаках, тож таблиця — єдиний чесний спосіб показати
+  // їх усі. Остання колонка найвигідніша, її й підсвічуємо.
+  const last = PRICE_TIERS.length - 1;
+  const uah = (n: number) =>
+    new Intl.NumberFormat('uk-UA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+
   return (
     <Block
       id="prices"
       tone="cream"
       emoji="💸"
       title="Чим більший обʼєм — тим нижча ціна"
-      subtitle={`Ціни за пачку на ${PRICE_APPLIES_TO}. Решта смаків — прайс за запитом.`}
+      subtitle={`Ціна за пачку, гривень. У ящику ${BOX_PACKS} пачок, мінімальне замовлення — 5 ящиків.`}
     >
-      <div className="grid sm:grid-cols-3 gap-4 md:gap-5">
-        {PRICE_TIERS.map((t, i) => {
-          const best = i === PRICE_TIERS.length - 1;
-          const save = base - t.price;
-          return (
-            <Reveal key={t.qty} delay={i * 90} from="zoom" className="h-full">
-              <div
-                className={cn(
-                  'relative h-full rounded-[26px] border-[3px] border-bul-ink shadow-pop p-6 pt-8 text-center transition-transform duration-300 hover:-translate-y-1.5',
-                  best ? 'bg-bul-red text-white' : 'bg-white text-bul-ink'
-                )}
-              >
-                {best && (
-                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 -rotate-3 whitespace-nowrap rounded-full bg-bul-yellow border-[2.5px] border-bul-ink px-3 py-0.5 text-[11px] font-extrabold text-bul-ink">
-                    НАЙВИГІДНІШЕ
-                  </span>
-                )}
-
-                <div className={cn('text-[12px] font-extrabold uppercase tracking-wider', best ? 'text-white/65' : 'text-bul-ink/40')}>
-                  {t.note}
-                </div>
-
-                <div className="mt-2 h-display text-[52px] font-extrabold leading-none tracking-tight">
-                  {t.price}<span className="text-[26px]"> ₴</span>
-                </div>
-                <div className={cn('text-[13px] font-bold', best ? 'text-white/65' : 'text-bul-ink/45')}>за пачку</div>
-
-                <div
-                  className={cn(
-                    'mt-5 inline-block rounded-full border-[2.5px] px-4 py-1.5 text-[14px] font-extrabold',
-                    best ? 'border-white/40 bg-white/10' : 'border-bul-ink/15 bg-bul-cream'
-                  )}
-                >
-                  {t.qty}
-                </div>
-
-                <div className={cn('mt-3 text-[13px] font-extrabold', best ? 'text-bul-yellow' : save ? 'text-bul-red' : 'text-transparent')}>
-                  {save ? `економія ${save} ₴/шт` : '—'}
-                </div>
-              </div>
-            </Reveal>
-          );
-        })}
-      </div>
+      <Reveal>
+        <div className="overflow-x-auto rounded-[26px] border-[3px] border-bul-ink bg-white shadow-pop">
+          <table className="w-full min-w-[560px] border-collapse text-left">
+            <thead>
+              <tr className="bg-bul-ink text-white">
+                <th className="p-4 text-[13px] font-extrabold uppercase tracking-wider">Позиція</th>
+                {PRICE_TIERS.map((t, i) => (
+                  <th
+                    key={t.boxes}
+                    className={cn(
+                      'p-4 text-center text-[13px] font-extrabold leading-tight',
+                      i === last && 'bg-bul-red'
+                    )}
+                  >
+                    {t.boxes}
+                    <span className="block text-[11px] font-bold text-white/60">{t.packs}</span>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {FLAVORS.map((f, row) => (
+                <tr key={f.name} className={cn(row % 2 === 1 && 'bg-bul-cream/60')}>
+                  <td className="p-4 text-[15px] font-extrabold">
+                    <span className="mr-1.5" aria-hidden>{f.emoji}</span>
+                    {f.name}
+                    <span className="ml-2 text-[12px] font-bold text-bul-ink/45">{f.pack}</span>
+                  </td>
+                  {f.prices.map((price, i) => (
+                    <td
+                      key={i}
+                      className={cn(
+                        'p-4 text-center text-[16px] font-extrabold tabular-nums',
+                        i === last ? 'bg-bul-red/10 text-bul-red' : 'text-bul-ink/80'
+                      )}
+                    >
+                      {uah(price)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Reveal>
 
       <Reveal delay={160}>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -473,7 +479,7 @@ function Prices({ v }: { v: Variant }) {
             Порахувати мою партію
           </CtaButton>
           <p className="text-[13px] font-semibold text-bul-ink/50">
-            Ціни можуть змінюватись — актуальні підтверджує менеджер
+            Прайс від {PRICE_UPDATED}. Актуальні ціни підтверджує менеджер
           </p>
         </div>
       </Reveal>

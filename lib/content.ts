@@ -19,6 +19,8 @@ export type Flavor = {
   image?: string;
   /** Запасний підгін масштабу, якщо нове фото має інші поля навколо пачки. */
   zoom?: number;
+  /** Ціна за пачку на кожній сходинці обсягу — у тому ж порядку, що PRICE_TIERS. */
+  prices: [number, number, number];
 };
 
 export const FLAVORS: Flavor[] = [
@@ -29,6 +31,7 @@ export const FLAVORS: Flavor[] = [
     pack: '140 г',
     tag: 'ХІТ',
     image: '/original.webp',
+    prices: [83.0, 81.0, 79.95],
   },
   {
     name: 'Carbonara',
@@ -37,6 +40,7 @@ export const FLAVORS: Flavor[] = [
     pack: '130 г',
     tag: 'ХІТ',
     image: '/carbonara.webp',
+    prices: [75.95, 72.95, 69.95],
   },
   {
     name: 'Cheese',
@@ -44,6 +48,15 @@ export const FLAVORS: Flavor[] = [
     note: 'сирний соус, найкраще заходить підліткам',
     pack: '140 г',
     image: '/cheese.webp',
+    prices: [75.95, 72.95, 69.95],
+  },
+  {
+    name: 'Habanero / Lime',
+    emoji: '🍋',
+    note: 'хабанеро й лайм, різкий цитрус',
+    pack: '135 г',
+    image: '/habanero.webp',
+    prices: [84.0, 82.0, 80.0],
   },
   {
     name: '2× Spicy',
@@ -52,16 +65,21 @@ export const FLAVORS: Flavor[] = [
     pack: '140 г',
     tag: 'ВІРУС',
     image: '/spicy2x.webp',
+    prices: [83.0, 81.0, 79.95],
   },
 ];
 
 // Оптові сходинки. Ціни станом на зараз — правити тут.
-export const PRICE_APPLIES_TO = 'Carbonara та Cheese';
+// Дата з прайсу — показуємо на сторінці, щоб було видно, наскільки ціни свіжі.
+export const PRICE_UPDATED = '19.10.2026';
+
+/** Скільки пачок у ящику. Зі сходинок прайсу: 5 ящиків = 100 шт. */
+export const BOX_PACKS = 20;
 
 export const PRICE_TIERS = [
-  { qty: 'від 5 ящиків',  note: 'старт',          price: 82 },
-  { qty: 'від 10 ящиків', note: 'робочий обʼєм',  price: 77 },
-  { qty: 'від 44 ящиків', note: 'палета',         price: 72 },
+  { boxes: 'від 5 ящиків',  packs: '100 шт', note: 'старт' },
+  { boxes: 'від 15 ящиків', packs: '300 шт', note: 'робочий обʼєм' },
+  { boxes: 'від 30 ящиків', packs: '600 шт', note: 'півпалета' },
 ];
 
 // Фото нашого складу. Це не рендери й не каталог постачальника —
@@ -103,7 +121,7 @@ export const WHY = [
 ];
 
 export const TERMS = [
-  { emoji: '📦', label: 'Мінімалка',  value: 'від 5 ящиків' },
+  { emoji: '📦', label: 'Мінімалка',  value: 'від 5 ящиків — 100 пачок' },
   { emoji: '🏬', label: 'Склад',      value: 'Київ, відвантаження в день оплати' },
   { emoji: '🚚', label: 'Доставка',   value: 'Нова Пошта, 1–2 дні' },
   { emoji: '🧾', label: 'Документи',  value: 'ФОП, договір, ТТН' },
@@ -132,7 +150,7 @@ export const FAQ = [
   },
   {
     q: 'Мінімальний обʼєм?',
-    a: 'Від 5 ящиків. Далі ціна за пачку падає: від 10 ящиків — 77 ₴, палета (44 ящики) — 72 ₴.',
+    a: 'Від 5 ящиків — це 100 пачок, у ящику їх 20. Далі ціна падає: від 15 ящиків і від 30 ящиків (півпалета). Повна сітка — у таблиці вище.',
   },
   {
     q: 'Як оформлюємо і як платити?',

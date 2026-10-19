@@ -6,7 +6,7 @@ import { Landing } from '@/components/Landing';
 export const metadata: Metadata = {
   title: 'Buldak оптом — залишити заявку',
   description:
-    'Оптові поставки корейської локшини Buldak: від 5 ящиків, ціна від 72 ₴/пачка, склад у Києві, доставка Україною за 1–2 дні.',
+    'Оптові поставки корейської локшини Buldak: від 5 ящиків, ціна від 69,95 ₴/пачка, склад у Києві, доставка Україною за 1–2 дні.',
 };
 
 export default function FormVariantPage() {
