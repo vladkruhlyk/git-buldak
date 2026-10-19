@@ -413,11 +413,13 @@ function Stock() {
 
 /** Сходинки опту: чим більший обʼєм, тим нижча ціна за пачку. */
 function Prices({ v }: { v: Variant }) {
-  // Ціни тепер різні по смаках, тож таблиця — єдиний чесний спосіб показати
-  // їх усі. Остання колонка найвигідніша, її й підсвічуємо.
-  const last = PRICE_TIERS.length - 1;
   const uah = (n: number) =>
     new Intl.NumberFormat('uk-UA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+
+  // Ціни різні по смаках, тож на картці показуємо мінімальну на цій сходинці.
+  // Рахуємо з FLAVORS, щоб після правки прайсу картки оновились самі.
+  const from = PRICE_TIERS.map((_, i) => Math.min(...FLAVORS.map((f) => f.prices[i])));
+  const last = PRICE_TIERS.length - 1;
 
   return (
     <Block
@@ -425,53 +427,55 @@ function Prices({ v }: { v: Variant }) {
       tone="cream"
       emoji="💸"
       title="Чим більший обʼєм — тим нижча ціна"
-      subtitle={`Ціна за пачку, гривень. У ящику ${BOX_PACKS} пачок, мінімальне замовлення — 5 ящиків.`}
+      subtitle={`Ціна за пачку залежить від смаку. У ящику ${BOX_PACKS} пачок, мінімальне замовлення — 5 ящиків.`}
     >
-      <Reveal>
-        <div className="overflow-x-auto rounded-[26px] border-[3px] border-bul-ink bg-white shadow-pop">
-          <table className="w-full min-w-[560px] border-collapse text-left">
-            <thead>
-              <tr className="bg-bul-ink text-white">
-                <th className="p-4 text-[13px] font-extrabold uppercase tracking-wider">Позиція</th>
-                {PRICE_TIERS.map((t, i) => (
-                  <th
-                    key={t.boxes}
-                    className={cn(
-                      'p-4 text-center text-[13px] font-extrabold leading-tight',
-                      i === last && 'bg-bul-red'
-                    )}
-                  >
-                    {t.boxes}
-                    <span className="block text-[11px] font-bold text-white/60">{t.packs}</span>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {FLAVORS.map((f, row) => (
-                <tr key={f.name} className={cn(row % 2 === 1 && 'bg-bul-cream/60')}>
-                  <td className="p-4 text-[15px] font-extrabold">
-                    <span className="mr-1.5" aria-hidden>{f.emoji}</span>
-                    {f.name}
-                    <span className="ml-2 text-[12px] font-bold text-bul-ink/45">{f.pack}</span>
-                  </td>
-                  {f.prices.map((price, i) => (
-                    <td
-                      key={i}
-                      className={cn(
-                        'p-4 text-center text-[16px] font-extrabold tabular-nums',
-                        i === last ? 'bg-bul-red/10 text-bul-red' : 'text-bul-ink/80'
-                      )}
-                    >
-                      {uah(price)}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Reveal>
+      <div className="grid sm:grid-cols-3 gap-4 md:gap-5">
+        {PRICE_TIERS.map((t, i) => {
+          const best = i === last;
+          const save = from[0] - from[i];
+          return (
+            <Reveal key={t.boxes} delay={i * 90} from="zoom" className="h-full">
+              <div
+                className={cn(
+                  'relative h-full rounded-[26px] border-[3px] border-bul-ink shadow-pop p-6 pt-8 text-center transition-transform duration-300 hover:-translate-y-1.5',
+                  best ? 'bg-bul-red text-white' : 'bg-white text-bul-ink'
+                )}
+              >
+                {best && (
+                  <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 -rotate-3 whitespace-nowrap rounded-full bg-bul-yellow border-[2.5px] border-bul-ink px-3 py-0.5 text-[11px] font-extrabold text-bul-ink">
+                    НАЙВИГІДНІШЕ
+                  </span>
+                )}
+
+                <div className={cn('text-[12px] font-extrabold uppercase tracking-wider', best ? 'text-white/65' : 'text-bul-ink/40')}>
+                  {t.note}
+                </div>
+
+                <div className="mt-2 h-display font-extrabold leading-none tracking-tight">
+                  <span className="text-[20px] align-top">від </span>
+                  <span className="text-[46px]">{uah(from[i])}</span>
+                  <span className="text-[24px]"> ₴</span>
+                </div>
+                <div className={cn('text-[13px] font-bold', best ? 'text-white/65' : 'text-bul-ink/45')}>за пачку</div>
+
+                <div
+                  className={cn(
+                    'mt-5 inline-block rounded-full border-[2.5px] px-4 py-1.5 text-[14px] font-extrabold',
+                    best ? 'border-white/40 bg-white/10' : 'border-bul-ink/15 bg-bul-cream'
+                  )}
+                >
+                  {t.boxes}
+                  <span className={cn('ml-1.5 font-bold', best ? 'text-white/60' : 'text-bul-ink/45')}>{t.packs}</span>
+                </div>
+
+                <div className={cn('mt-3 text-[13px] font-extrabold', best ? 'text-bul-yellow' : save ? 'text-bul-red' : 'text-transparent')}>
+                  {save ? `економія ${uah(save)} ₴/шт` : '—'}
+                </div>
+              </div>
+            </Reveal>
+          );
+        })}
+      </div>
 
       <Reveal delay={160}>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -479,7 +483,7 @@ function Prices({ v }: { v: Variant }) {
             Порахувати мою партію
           </CtaButton>
           <p className="text-[13px] font-semibold text-bul-ink/50">
-            Прайс від {PRICE_UPDATED}. Актуальні ціни підтверджує менеджер
+            Прайс від {PRICE_UPDATED}. Повну сітку по смаках надішле менеджер
           </p>
         </div>
       </Reveal>
