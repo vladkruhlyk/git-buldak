@@ -27,6 +27,10 @@ const SECRET =
 
 const SHEET_NAME = 'Заявки';
 
+// Номер починається з «+», і Sheets приймає його за формулу та показує
+// #ERROR!. Тому колонку телефону примусово тримаємо у текстовому форматі.
+const PHONE_HEADER = 'Телефон';
+
 const COLUMNS = [
   'Дата',
   'Імʼя',
@@ -87,6 +91,13 @@ function getSheet() {
     sheet.setColumnWidth(1, 140);
     sheet.setColumnWidth(4, 220);
     sheet.setColumnWidth(6, 280);
+  }
+
+  // Робимо це щоразу, а не лише при створенні листа: таблиця могла бути
+  // заведена раніше, ще без цього форматування.
+  const phoneCol = COLUMNS.indexOf(PHONE_HEADER) + 1;
+  if (phoneCol > 0) {
+    sheet.getRange(1, phoneCol, sheet.getMaxRows()).setNumberFormat('@');
   }
   return sheet;
 }
