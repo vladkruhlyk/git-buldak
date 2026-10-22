@@ -4,10 +4,13 @@ import { useState } from 'react';
 import { cn } from '@/lib/format';
 import { normalizeUaPhone } from '@/lib/phone';
 import { CONFIG } from '@/lib/config';
+import { BATCH_OPTIONS, FLAVORS } from '@/lib/content';
 
 const ENDPOINT = '/api/lead';
 
 export function LeadForm() {
+  const [flavors, setFlavors] = useState<string[]>([]);
+  const [batch, setBatch] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [request, setRequest] = useState('');
@@ -15,6 +18,9 @@ export function LeadForm() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const toggleFlavor = (name: string) =>
+    setFlavors((prev) => (prev.includes(name) ? prev.filter((f) => f !== name) : [...prev, name]));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +39,8 @@ export function LeadForm() {
         body: JSON.stringify({
           name: name.trim(),
           phone: normalizedPhone,
+          flavors,
+          batch,
           request: request.trim(),
           company,
           page_url: typeof window !== 'undefined' ? window.location.href : '',
@@ -76,6 +84,7 @@ export function LeadForm() {
 
   const field =
     'w-full h-14 px-4 rounded-2xl bg-bul-cream border-[2.5px] border-bul-ink/15 text-[16px] font-medium text-bul-ink placeholder:text-bul-ink/35 focus:outline-none focus:border-bul-red transition-colors';
+  const legend = 'text-[12px] font-extrabold uppercase tracking-wider text-bul-ink/45 mb-2';
 
   return (
     <form
@@ -83,7 +92,36 @@ export function LeadForm() {
       noValidate
       className="relative rounded-[28px] bg-white border-[3px] border-bul-ink shadow-pop-lg p-6 md:p-7"
     >
-      <div className="grid gap-2.5">
+      <fieldset>
+        <legend className={legend}>Які смаки цікавлять</legend>
+        <div className="flex flex-wrap gap-2">
+          {FLAVORS.map((f) => (
+            <Chip
+              key={f.name}
+              label={f.name}
+              emoji={f.emoji}
+              checked={flavors.includes(f.name)}
+              onChange={() => toggleFlavor(f.name)}
+            />
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset className="mt-5">
+        <legend className={legend}>Розмір партії</legend>
+        <div className="flex flex-wrap gap-2">
+          {BATCH_OPTIONS.map((o) => (
+            <Chip
+              key={o.value}
+              label={o.label}
+              checked={batch === o.value}
+              onChange={() => setBatch(batch === o.value ? '' : o.value)}
+            />
+          ))}
+        </div>
+      </fieldset>
+
+      <div className="mt-6 grid gap-2.5">
         <input
           type="text" value={name} onChange={(e) => setName(e.target.value)}
           placeholder="Імʼя" autoComplete="name" className={field}
@@ -94,8 +132,8 @@ export function LeadForm() {
         />
         <textarea
           value={request} onChange={(e) => setRequest(e.target.value)}
-          rows={3} maxLength={800}
-          placeholder="Запит — які смаки й скільки ящиків"
+          rows={2} maxLength={800}
+          placeholder="Коментар — необовʼязково"
           className={cn(field, 'h-auto py-3.5 resize-none')}
         />
       </div>
@@ -122,8 +160,32 @@ export function LeadForm() {
       </button>
 
       <p className="mt-3.5 text-[12px] font-medium text-bul-ink/50 text-center text-pretty">
-        Передзвонимо в робочий час. Без спаму й дзвінків «просто так».
+        Обовʼязкові лише імʼя та телефон. Передзвонимо в робочий час.
       </p>
     </form>
+  );
+}
+
+function Chip({
+  label, emoji, checked, onChange,
+}: {
+  label: string;
+  emoji?: string;
+  checked: boolean;
+  onChange: () => void;
+}) {
+  return (
+    <label
+      className={cn(
+        'cursor-pointer select-none rounded-full px-3.5 h-10 inline-flex items-center gap-1.5 text-[14px] font-bold border-[2.5px] transition-colors',
+        checked
+          ? 'bg-bul-ink border-bul-ink text-white'
+          : 'bg-white border-bul-ink/15 text-bul-ink/70 hover:border-bul-ink/50 hover:text-bul-ink'
+      )}
+    >
+      <input type="checkbox" checked={checked} onChange={onChange} className="sr-only" />
+      {emoji && <span aria-hidden>{emoji}</span>}
+      {label}
+    </label>
   );
 }

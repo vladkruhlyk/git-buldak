@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { normalizeUaPhone } from '@/lib/phone';
+import { BATCH_OPTIONS, FLAVORS } from '@/lib/content';
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 // Один або кілька отримувачів через кому: "-1001234567890,123456789"
@@ -39,6 +40,8 @@ function kyivTime() {
 type Lead = {
   name?: string;
   phone?: string;
+  flavors?: string[];
+  batch?: string;
   request?: string;
   page_url?: string;
   company?: string; // honeypot — реальні люди його не бачать
@@ -50,12 +53,24 @@ function buildMessage(lead: Lead) {
   const raw = lead.request?.trim() ?? '';
   const request = raw.length > 800 ? `${raw.slice(0, 800)}…` : raw;
 
+  // Приймаємо лише ті смаки, що справді є на сайті: у повідомлення не має
+  // потрапляти довільний текст, надісланий в обхід форми.
+  const known = new Set(FLAVORS.map((f) => f.name));
+  const flavors = (lead.flavors ?? []).filter((f) => known.has(f));
+  const batch = BATCH_OPTIONS.find((o) => o.value === lead.batch)?.label;
+
   const lines = [
     '🌶 <b>Заявка · Buldak опт</b>',
     '',
     `👤 <b>Імʼя:</b> ${esc(lead.name?.trim() ?? '')}`,
     `📞 <b>Телефон:</b> <code>${esc(lead.phone?.trim() ?? '')}</code>`,
   ];
+
+  // Смаки й партія йдуть одним блоком, а не двома через порожній рядок.
+  const order: string[] = [];
+  if (flavors.length) order.push(`🍜 <b>Смаки:</b> ${esc(flavors.join(', '))}`);
+  if (batch) order.push(`📦 <b>Партія:</b> ${esc(batch)}`);
+  if (order.length) lines.push('', ...order);
 
   if (request) {
     lines.push('', '💬 <b>Запит:</b>', `<blockquote>${esc(request)}</blockquote>`);

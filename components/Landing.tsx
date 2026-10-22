@@ -643,7 +643,7 @@ function FinalCta({ v }: { v: Variant }) {
             </ul>
 
             {v === 'form' ? (
-              <div className="mt-9 max-w-md mx-auto text-left">
+              <div className="mt-9 max-w-xl mx-auto text-left">
                 <LeadForm />
               </div>
             ) : (

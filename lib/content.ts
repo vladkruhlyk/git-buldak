@@ -97,6 +97,16 @@ export const STOCK_POINTS = [
   { emoji: '⚡️', title: 'Відвантаження в день оплати', text: 'Нова Пошта — і за 1–2 дні партія у вас.' },
 ];
 
+// Варіанти для форми. Розміри збігаються зі сходинками прайсу, щоб менеджер
+// одразу бачив, під яку ціну рахувати.
+export const BATCH_OPTIONS = [
+  { value: 'b5',      label: '5 ящиків' },
+  { value: 'b15',     label: '15 ящиків' },
+  { value: 'b30',     label: '30 ящиків' },
+  { value: 'more',    label: 'Більше' },
+  { value: 'unknown', label: 'Ще не знаю' },
+] as const;
+
 export const WHY = [
   {
     emoji: '📱',
