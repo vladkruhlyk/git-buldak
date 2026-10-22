@@ -131,7 +131,9 @@ async function saveToSheet(c: Clean) {
         secret: SHEET_SECRET,
         date: kyivTime(),
         name: c.name,
-        phone: c.phone,
+        // Без «+»: Sheets читає «+380…» як формулу і показує #ERROR!.
+        // Прибираємо його тут, щоб не залежати від поведінки Apps Script.
+        phone: c.phone.replace(/^\+/, ''),
         flavors: c.flavors.join(', '),
         batch: c.batch,
         request: c.request,

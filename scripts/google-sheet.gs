@@ -27,10 +27,6 @@ const SECRET =
 
 const SHEET_NAME = 'Заявки';
 
-// Номер починається з «+», і Sheets приймає його за формулу та показує
-// #ERROR!. Тому колонку телефону примусово тримаємо у текстовому форматі.
-const PHONE_HEADER = 'Телефон';
-
 const COLUMNS = [
   'Дата',
   'Імʼя',
@@ -55,14 +51,10 @@ function doPost(e) {
       return reply({ ok: false, error: 'forbidden' });
     }
 
-    const sheet = getSheet();
-
-    // Телефон лишаємо порожнім: appendRow записує значення так, ніби його
-    // набрали руками, і «+380…» перетворюється на формулу з #ERROR!.
-    sheet.appendRow([
+    getSheet().appendRow([
       data.date || new Date(),
       data.name || '',
-      '',
+      data.phone || '',
       data.flavors || '',
       data.batch || '',
       data.request || '',
@@ -71,15 +63,6 @@ function doPost(e) {
       data.utm_campaign || '',
       data.page_url || '',
     ]);
-
-    // А тепер вписуємо його окремо — у клітинку, якій спершу задали
-    // текстовий формат. Так Sheets уже нічого не обчислює.
-    const phoneCol = COLUMNS.indexOf(PHONE_HEADER) + 1;
-    if (phoneCol > 0) {
-      const cell = sheet.getRange(sheet.getLastRow(), phoneCol);
-      cell.setNumberFormat('@');
-      cell.setValue(data.phone || '');
-    }
 
     return reply({ ok: true });
   } catch (err) {
